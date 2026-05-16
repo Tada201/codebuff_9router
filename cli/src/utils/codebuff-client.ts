@@ -1,4 +1,4 @@
-import { API_KEY_ENV_VAR } from '@codebuff/common/old-constants'
+import { API_KEY_ENV_VAR } from '@codebuff/common/constants/paths'
 import { AskUserBridge } from '@codebuff/common/utils/ask-user-bridge'
 import { CodebuffClient } from '@codebuff/sdk'
 
@@ -8,6 +8,7 @@ import { loadAgentDefinitions } from './local-agent-registry'
 import { logger } from './logger'
 import { getRgPath } from '../native/ripgrep'
 import { getProjectRoot } from '../project-files'
+import { loadSettings } from './settings'
 
 import type { ClientToolCall } from '@codebuff/common/tools/list'
 
@@ -57,6 +58,10 @@ export async function getCodebuffClient(): Promise<CodebuffClient | null> {
     }
 
     const projectRoot = getProjectRoot()
+    const {
+      nineRouterEndpoint,
+      nineRouterModel,
+    } = loadSettings()
 
     // Set up ripgrep path for SDK to use
     const env = getCliEnv()
@@ -77,6 +82,8 @@ export async function getCodebuffClient(): Promise<CodebuffClient | null> {
         cwd: projectRoot,
         agentDefinitions,
         logger,
+        nineRouterEndpoint,
+        nineRouterModel,
         overrideTools: {
           ask_user: async (input: ClientToolCall<'ask_user'>['input']) => {
             const askUserResponse = await AskUserBridge.request(

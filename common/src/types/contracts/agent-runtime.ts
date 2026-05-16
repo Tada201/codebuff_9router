@@ -69,4 +69,6 @@ export type AgentRuntimeScopedDeps = {
   sendSubagentChunk: SendSubagentChunkFn
 
   apiKey: string
+  nineRouterEndpoint?: string
+  nineRouterModel?: string
 }

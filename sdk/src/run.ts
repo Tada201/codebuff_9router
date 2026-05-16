@@ -123,6 +123,9 @@ export type CodebuffClientOptions = {
   fsSource?: Source<CodebuffFileSystem>
   spawnSource?: Source<CodebuffSpawn>
   logger?: Logger
+
+  nineRouterEndpoint?: string
+  nineRouterModel?: string
 }
 
 export type ImageContent = {
@@ -219,6 +222,8 @@ async function runOnce({
   signal,
   costMode,
   extraCodebuffMetadata,
+  nineRouterEndpoint,
+  nineRouterModel,
 }: RunExecutionOptions): Promise<RunState> {
   const fsSourceValue = typeof fsSource === 'function' ? fsSource() : fsSource
   const fs = await fsSourceValue
@@ -376,6 +381,8 @@ async function runOnce({
   const agentRuntimeImpl = getAgentRuntimeImpl({
     logger,
     apiKey,
+    nineRouterEndpoint,
+    nineRouterModel,
     handleStepsLogChunk: () => {
       // Does nothing for now
     },

@@ -402,7 +402,7 @@ async function ensureOpenTuiNativeBundle(targetInfo: TargetInfo) {
         extractDirForTar,
       ]
       if (process.platform === 'win32') {
-        tarArgs.unshift('--force-local')
+        // Some tar versions on Windows don't support --force-local
       }
 
       runCommand('tar', tarArgs)

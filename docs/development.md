@@ -14,6 +14,17 @@ Then start the CLI separately:
 bun start-cli
 ```
 
+### Building the CLI Binary
+
+To build a standalone executable for the CLI:
+
+```bash
+cd cli
+bun ./scripts/build-binary.ts codebuff-local 1.0.0
+```
+
+The binary will be generated in `cli/bin/codebuff-local.exe` (on Windows) or `cli/bin/codebuff-local` (on Unix).
+
 Other service commands:
 
 ```bash

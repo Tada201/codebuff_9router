@@ -8,6 +8,13 @@ import { handleInitializationFlowLocally } from './init'
 import { buildInterviewPrompt, buildPlanPrompt, buildReviewPromptFromArgs } from './prompt-builders'
 import { runBashCommand } from './router'
 import { handleUsageCommand } from './usage'
+import {
+  getNineRouterEndpoint,
+  setNineRouterEndpoint,
+  getNineRouterModel,
+  setNineRouterModel,
+} from '../utils/settings'
+import { resetCodebuffClient } from '../utils/codebuff-client'
 import { returnToFreebuffLanding } from '../hooks/use-freebuff-session'
 import { useThemeStore } from '../hooks/use-theme'
 import { WEBSITE_URL } from '../login/constants'
@@ -610,6 +617,95 @@ const ALL_COMMANDS: CommandDefinition[] = [
         // The hook surfaces poll errors via the session store; nothing to do
         // here beyond letting the chat history reflect the attempt.
       })
+    },
+  }),
+  defineCommandWithArgs({
+    name: '9router',
+    aliases: ['9r'],
+    handler: async (params, args) => {
+      const trimmedArgs = args.trim()
+      const parts = trimmedArgs.split(/\s+/)
+      
+      if (parts[0] === 'endpoint') {
+        const endpoint = parts[1]
+        if (!endpoint) {
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`Current 9Router endpoint: ${getNineRouterEndpoint() || 'not set (default: http://localhost:20128/v1)'}`),
+          ])
+        } else {
+          setNineRouterEndpoint(endpoint)
+          resetCodebuffClient()
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`9Router endpoint set to: ${endpoint}`),
+          ])
+        }
+        clearInput(params)
+        return
+      }
+
+      if (parts[0] === 'model') {
+        const model = parts[1]
+        if (!model) {
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`Current 9Router model: ${getNineRouterModel() || 'not set'}`),
+          ])
+        } else {
+          setNineRouterModel(model)
+          resetCodebuffClient()
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`9Router model set to: ${model}`),
+          ])
+        }
+        clearInput(params)
+        return
+      }
+
+      if (parts[0] === 'models') {
+        const endpoint = getNineRouterEndpoint() || 'http://localhost:20128/v1'
+        try {
+          const response = await fetch(`${endpoint}/models`)
+          if (!response.ok) throw new Error(`HTTP ${response.status}`)
+          const data = await response.json() as { data: Array<{ id: string }> }
+          const modelList = data.data.map(m => m.id).join('\n')
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`Available models from 9Router:\n${modelList}`),
+          ])
+        } catch (error) {
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`Failed to fetch models from 9Router: ${error instanceof Error ? error.message : String(error)}`),
+          ])
+        }
+        clearInput(params)
+        return
+      }
+
+      if (trimmedArgs === 'off' || trimmedArgs === 'disable') {
+        setNineRouterEndpoint('')
+        resetCodebuffClient()
+        params.setMessages((prev) => [
+          ...prev,
+          getSystemMessage('9Router disabled.'),
+        ])
+        clearInput(params)
+        return
+      }
+
+      // Default help for /9router
+      params.setMessages((prev) => [
+        ...prev,
+        getSystemMessage(`9Router Configuration:
+/9router endpoint [url] - Set local 9Router endpoint (default: http://localhost:20128/v1)
+/9router model [model]    - Set model to use with 9Router
+/9router models          - List available models from 9Router
+/9router off             - Disable 9Router and use standard providers`),
+      ])
+      clearInput(params)
     },
   }),
 ]

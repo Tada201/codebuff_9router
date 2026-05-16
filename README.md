@@ -163,6 +163,61 @@ freebuff
 
 Freebuff is ad-supported and uses models optimized for fast, high-quality assistance. It includes built-in web research, browser use, and more. Learn more in the [Freebuff README](./freebuff/README.md).
 
+## Local 9Router Integration
+
+Codebuff supports routing all AI requests through a local [9Router](https://github.com/Tada201/9router) proxy instance. This allows for cost optimization, local caching, and greater control over your LLM traffic.
+
+### Configuration
+
+To enable 9Router in the CLI:
+
+1. **Set the endpoint**:
+   ```bash
+   /9router endpoint http://localhost:20128/v1
+   ```
+2. **(Optional) Set a specific model**:
+   ```bash
+   /9router model anthropic/claude-3.5-sonnet
+   ```
+3. **List available models**:
+   ```bash
+   /9router models
+   ```
+4. **Disable 9Router**:
+   ```bash
+   /9router off
+   ```
+
+## Installing from Source
+
+If you want to run a custom version of Codebuff or contribute to development:
+
+1. **Install Bun**:
+   ```powershell
+   powershell -c "irm bun.sh/install.ps1 | iex"
+   ```
+2. **Clone and Install Dependencies**:
+   ```bash
+   git clone https://github.com/Tada201/codebuff_9router.git
+   cd codebuff_9router
+   bun install
+   ```
+3. **Build the Binary**:
+   ```bash
+   cd cli
+   bun ./scripts/build-binary.ts codebuff-local 1.0.0
+   ```
+4. **Add to PATH**:
+   Add the `cli/bin` directory to your system's PATH to run `codebuff-local` from anywhere.
+
+## Uninstallation
+
+To uninstall the local version:
+
+1. **Remove from PATH**: Remove the `cli/bin` entry from your system environment variables.
+2. **Delete the folder**: Delete the `codebuff_9router` repository folder.
+3. **Clean up config (Optional)**: Delete the `.codebuff` configuration directory in your home folder.
+
 ## Why choose Codebuff
 
 **Custom workflows**: TypeScript generators let you mix AI generation with programmatic control. Agents can spawn subagents, branch on conditions, and run multi-step processes.

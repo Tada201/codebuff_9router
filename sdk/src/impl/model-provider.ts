@@ -86,6 +86,10 @@ export interface ModelRequestParams {
   skipChatGptOAuth?: boolean
   /** Cost mode (e.g. 'free') — affects fallback behavior for OAuth routes */
   costMode?: string
+  /** 9Router endpoint for local proxying */
+  nineRouterEndpoint?: string
+  /** 9Router model ID */
+  nineRouterModel?: string
 }
 
 /**
@@ -152,11 +156,36 @@ export async function getModelForRequest(params: ModelRequestParams): Promise<Mo
     }
   }
 
+  // Check if we should use 9Router local proxy
+  if (params.nineRouterEndpoint) {
+    return {
+      model: createNineRouterModel(params.nineRouterEndpoint, params.nineRouterModel || model),
+      isChatGptOAuth: false,
+    }
+  }
+
   // Default: use Codebuff backend
   return {
     model: createCodebuffBackendModel(apiKey, model),
     isChatGptOAuth: false,
   }
+}
+
+/**
+ * Create a model that routes through a local 9Router instance.
+ */
+function createNineRouterModel(endpoint: string, model: string): LanguageModel {
+  return new OpenAICompatibleChatLanguageModel(model, {
+    provider: '9router',
+    url: () => endpoint.endsWith('/v1') ? `${endpoint}/chat/completions` : `${endpoint}/v1/chat/completions`,
+    headers: () => ({
+      'Content-Type': 'application/json',
+      'user-agent': `ai-sdk/openai-compatible/${VERSION}/codebuff-9router`,
+    }),
+    fetch: undefined,
+    includeUsage: undefined,
+    supportsStructuredOutputs: true,
+  })
 }
 
 /**

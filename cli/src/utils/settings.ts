@@ -26,6 +26,10 @@ export interface Settings {
    *  next freebuff launch so users land in the queue for their preferred
    *  model without re-picking. Persisted as the canonical model id. */
   freebuffModel?: string
+  /** 9Router endpoint for local proxying */
+  nineRouterEndpoint?: string
+  /** 9Router model ID */
+  nineRouterModel?: string
   /** @deprecated Use server-side fallbackToALaCarte setting instead */
   alwaysUseALaCarte?: boolean
   /** @deprecated Use server-side fallbackToALaCarte setting instead */
@@ -108,6 +112,16 @@ const validateSettings = (parsed: unknown): Settings => {
     settings.freebuffModel = obj.freebuffModel
   }
 
+  // Validate nineRouterEndpoint
+  if (typeof obj.nineRouterEndpoint === 'string') {
+    settings.nineRouterEndpoint = obj.nineRouterEndpoint
+  }
+
+  // Validate nineRouterModel
+  if (typeof obj.nineRouterModel === 'string') {
+    settings.nineRouterModel = obj.nineRouterModel
+  }
+
   // Validate alwaysUseALaCarte (legacy)
   if (typeof obj.alwaysUseALaCarte === 'boolean') {
     settings.alwaysUseALaCarte = obj.alwaysUseALaCarte
@@ -175,5 +189,33 @@ export const loadFreebuffModelPreference = (): string | undefined => {
  */
 export const saveFreebuffModelPreference = (model: string): void => {
   saveSettings({ freebuffModel: model })
+}
+
+/**
+ * Load the 9Router endpoint
+ */
+export const getNineRouterEndpoint = (): string | undefined => {
+  return loadSettings().nineRouterEndpoint
+}
+
+/**
+ * Save the 9Router endpoint
+ */
+export const setNineRouterEndpoint = (endpoint: string): void => {
+  saveSettings({ nineRouterEndpoint: endpoint })
+}
+
+/**
+ * Load the 9Router model
+ */
+export const getNineRouterModel = (): string | undefined => {
+  return loadSettings().nineRouterModel
+}
+
+/**
+ * Save the 9Router model
+ */
+export const setNineRouterModel = (model: string): void => {
+  saveSettings({ nineRouterModel: model })
 }
 

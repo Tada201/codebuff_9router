@@ -308,6 +308,8 @@ export async function* promptAiSdkStream(
     model: params.model,
     skipChatGptOAuth: params.skipChatGptOAuth,
     costMode: params.costMode,
+    nineRouterEndpoint: params.nineRouterEndpoint,
+    nineRouterModel: params.nineRouterModel,
   }
   const { model: aiSDKModel, isChatGptOAuth } =
     await getModelForRequest(modelParams)
@@ -444,8 +446,8 @@ export async function* promptAiSdkStream(
       logger.info(
         {
           toolName,
-          errorType: error.name,
-          error: error.message,
+          errorType: (error as any).name,
+          error: (error as any).message,
         },
         'Tool error - passing through for graceful error handling',
       )
@@ -722,6 +724,8 @@ export async function promptAiSdk(
     apiKey: params.apiKey,
     model: params.model,
     skipChatGptOAuth: true, // Always use Codebuff backend for non-streaming
+    nineRouterEndpoint: params.nineRouterEndpoint,
+    nineRouterModel: params.nineRouterModel,
   }
   const { model: aiSDKModel } = await getModelForRequest(modelParams)
 
@@ -789,6 +793,8 @@ export async function promptAiSdkStructured<T>(
     apiKey: params.apiKey,
     model: params.model,
     skipChatGptOAuth: true, // Always use Codebuff backend for non-streaming
+    nineRouterEndpoint: params.nineRouterEndpoint,
+    nineRouterModel: params.nineRouterModel,
   }
   const { model: aiSDKModel } = await getModelForRequest(modelParams)
 
