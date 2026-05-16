@@ -9,12 +9,14 @@ interface UseLoginKeyboardHandlersParams {
   loading: boolean
   onFetchLoginUrl: () => void
   onCopyUrl: (url: string) => Promise<void> | void
+  onSkip?: () => void
 }
 
 /**
  * Custom hook that handles keyboard input for the login modal
  * - Enter key: fetch login URL and open browser
  * - 'c' key: copy URL to clipboard
+ * - 's' key: skip login (local mode)
  * - Ctrl+C: exit the application
  */
 export function useLoginKeyboardHandlers({
@@ -23,6 +25,7 @@ export function useLoginKeyboardHandlers({
   loading,
   onFetchLoginUrl,
   onCopyUrl,
+  onSkip,
 }: UseLoginKeyboardHandlersParams) {
   useKeyboard(
     useCallback(
@@ -34,6 +37,7 @@ export function useLoginKeyboardHandlers({
           !key.shift
 
         const isCKey = key.name === 'c' && !key.ctrl && !key.meta && !key.shift
+        const isSKey = key.name === 's' && !key.ctrl && !key.meta && !key.shift
         const isCtrlC = key.ctrl && key.name === 'c'
 
         if (isCtrlC) {
@@ -69,8 +73,18 @@ export function useLoginKeyboardHandlers({
           // unhandled promise rejections if the implementation changes
           void Promise.resolve(onCopyUrl(loginUrl)).catch(() => {})
         }
+
+        if (isSKey && onSkip && !loading) {
+          if (
+            'preventDefault' in key &&
+            typeof key.preventDefault === 'function'
+          ) {
+            key.preventDefault()
+          }
+          onSkip()
+        }
       },
-      [loginUrl, hasOpenedBrowser, loading, onCopyUrl, onFetchLoginUrl],
+      [loginUrl, hasOpenedBrowser, loading, onCopyUrl, onFetchLoginUrl, onSkip],
     ),
   )
 }

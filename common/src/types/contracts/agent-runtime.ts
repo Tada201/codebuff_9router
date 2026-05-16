@@ -71,4 +71,5 @@ export type AgentRuntimeScopedDeps = {
   apiKey: string
   nineRouterEndpoint?: string
   nineRouterModel?: string
+  nineRouterApiKey?: string
 }

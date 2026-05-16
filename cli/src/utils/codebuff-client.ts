@@ -13,6 +13,7 @@ import { loadSettings } from './settings'
 import type { ClientToolCall } from '@codebuff/common/tools/list'
 
 let clientInstance: CodebuffClient | null = null
+let overrideToken: string | null = null
 
 /**
  * Recursively removes undefined values from an object to ensure clean JSON serialization.
@@ -41,13 +42,17 @@ function removeUndefinedValues<T>(obj: T): T {
  * Reset the cached CodebuffClient instance.
  * This should be called after login to ensure the client is re-initialized with new credentials.
  */
-export function resetCodebuffClient(): void {
+export function resetCodebuffClient(token?: string): void {
   clientInstance = null
+  if (token) {
+    overrideToken = token
+  }
 }
 
 export async function getCodebuffClient(): Promise<CodebuffClient | null> {
   if (!clientInstance) {
-    const { token: apiKey } = getAuthTokenDetails()
+    const { token: apiKeyFromFile } = getAuthTokenDetails()
+    const apiKey = overrideToken ?? apiKeyFromFile
 
     if (!apiKey) {
       logger.warn(
@@ -61,6 +66,7 @@ export async function getCodebuffClient(): Promise<CodebuffClient | null> {
     const {
       nineRouterEndpoint,
       nineRouterModel,
+      nineRouterApiKey,
     } = loadSettings()
 
     // Set up ripgrep path for SDK to use
@@ -84,6 +90,7 @@ export async function getCodebuffClient(): Promise<CodebuffClient | null> {
         logger,
         nineRouterEndpoint,
         nineRouterModel,
+        nineRouterApiKey,
         overrideTools: {
           ask_user: async (input: ClientToolCall<'ask_user'>['input']) => {
             const askUserResponse = await AskUserBridge.request(

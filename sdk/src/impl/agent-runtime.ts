@@ -31,6 +31,7 @@ export function getAgentRuntimeImpl(
     clientEnv?: ClientEnv
     nineRouterEndpoint?: string
     nineRouterModel?: string
+    nineRouterApiKey?: string
   } & Pick<
     AgentRuntimeScopedDeps,
     | 'handleStepsLogChunk'
@@ -55,6 +56,7 @@ export function getAgentRuntimeImpl(
     sendSubagentChunk,
     nineRouterEndpoint,
     nineRouterModel,
+    nineRouterApiKey,
   } = params
 
   const trackSdkRuntimeEvent: TrackEventFn = (eventParams) => {
@@ -92,11 +94,11 @@ export function getAgentRuntimeImpl(
 
     // LLM
     promptAiSdkStream: (params) =>
-      promptAiSdkStream({ ...params, nineRouterEndpoint, nineRouterModel }),
+      promptAiSdkStream({ ...params, nineRouterEndpoint, nineRouterModel, nineRouterApiKey }),
     promptAiSdk: (params) =>
-      promptAiSdk({ ...params, nineRouterEndpoint, nineRouterModel }),
+      promptAiSdk({ ...params, nineRouterEndpoint, nineRouterModel, nineRouterApiKey }),
     promptAiSdkStructured: (params) =>
-      promptAiSdkStructured({ ...params, nineRouterEndpoint, nineRouterModel }),
+      promptAiSdkStructured({ ...params, nineRouterEndpoint, nineRouterModel, nineRouterApiKey }),
 
     // Mutable State
     databaseAgentCache,
@@ -120,6 +122,7 @@ export function getAgentRuntimeImpl(
     apiKey,
     nineRouterEndpoint,
     nineRouterModel,
+    nineRouterApiKey,
   }
 }
 

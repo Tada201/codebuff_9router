@@ -22,11 +22,13 @@ import type { User } from '../utils/auth'
 
 interface LoginModalProps {
   onLoginSuccess: (user: User) => void
+  onSkip?: () => void
   hasInvalidCredentials?: boolean | null
 }
 
 export const LoginModal = ({
   onLoginSuccess,
+  onSkip,
   hasInvalidCredentials = false,
 }: LoginModalProps) => {
   const renderer = useRenderer()
@@ -190,6 +192,7 @@ export const LoginModal = ({
     loading,
     onFetchLoginUrl: fetchLoginUrlAndOpenBrowser,
     onCopyUrl: copyToClipboard,
+    onSkip,
   })
 
 
@@ -351,6 +354,28 @@ export const LoginModal = ({
                 Press ENTER to login...
               </span>
             </text>
+            {onSkip && (
+              <box
+                style={{
+                  marginTop: 1,
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <Button onClick={onSkip}>
+                  <text>
+                    <span fg={theme.primary}>
+                      [ Skip to Local Mode (s) ]
+                    </span>
+                  </text>
+                </Button>
+                <text style={{ marginTop: 0.5 }}>
+                  <span fg={theme.secondary}>
+                    (For 9Router / Offline use)
+                  </span>
+                </text>
+              </box>
+            )}
           </box>
         )}
 
@@ -439,6 +464,17 @@ export const LoginModal = ({
                   Waiting for login...
                 </span>
               </text>
+              {onSkip && (
+                <box style={{ marginTop: 1 }}>
+                  <Button onClick={onSkip}>
+                    <text>
+                      <span fg={theme.primary}>
+                        [ Skip to Local Mode (s) ]
+                      </span>
+                    </text>
+                  </Button>
+                </box>
+              )}
               {isRemoteSession() && !isVerySmall && (
                 <text style={{ wrapMode: 'word' }}>
                   <span fg={theme.secondary}>

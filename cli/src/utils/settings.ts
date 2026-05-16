@@ -30,6 +30,8 @@ export interface Settings {
   nineRouterEndpoint?: string
   /** 9Router model ID */
   nineRouterModel?: string
+  /** 9Router API Key */
+  nineRouterApiKey?: string
   /** @deprecated Use server-side fallbackToALaCarte setting instead */
   alwaysUseALaCarte?: boolean
   /** @deprecated Use server-side fallbackToALaCarte setting instead */
@@ -120,6 +122,11 @@ const validateSettings = (parsed: unknown): Settings => {
   // Validate nineRouterModel
   if (typeof obj.nineRouterModel === 'string') {
     settings.nineRouterModel = obj.nineRouterModel
+  }
+
+  // Validate nineRouterApiKey
+  if (typeof obj.nineRouterApiKey === 'string') {
+    settings.nineRouterApiKey = obj.nineRouterApiKey
   }
 
   // Validate alwaysUseALaCarte (legacy)
@@ -219,3 +226,16 @@ export const setNineRouterModel = (model: string): void => {
   saveSettings({ nineRouterModel: model })
 }
 
+/**
+ * Load the 9Router API Key
+ */
+export const getNineRouterApiKey = (): string | undefined => {
+  return loadSettings().nineRouterApiKey
+}
+
+/**
+ * Save the 9Router API Key
+ */
+export const setNineRouterApiKey = (apiKey: string): void => {
+  saveSettings({ nineRouterApiKey: apiKey })
+}

@@ -194,6 +194,42 @@ const ALL_SLASH_COMMANDS: SlashCommand[] = [
     aliases: ['quit', 'q'],
     implicitCommand: true,
   },
+  {
+    id: '9router',
+    label: '9router',
+    description: 'Configure local 9Router proxy',
+    aliases: ['9r'],
+  },
+  {
+    id: '9router:endpoint',
+    label: '9router:endpoint',
+    description: 'Set 9Router endpoint URL',
+    insertText: '/9router endpoint ',
+  },
+  {
+    id: '9router:model',
+    label: '9router:model',
+    description: 'Set 9Router model ID',
+    insertText: '/9router model ',
+  },
+  {
+    id: '9router:key',
+    label: '9router:key',
+    description: 'Set 9Router API key',
+    insertText: '/9router key ',
+  },
+  {
+    id: '9router:models',
+    label: '9router:models',
+    description: 'List available 9Router models',
+    insertText: '/9router models',
+  },
+  {
+    id: '9router:off',
+    label: '9router:off',
+    description: 'Disable 9Router proxy',
+    insertText: '/9router off',
+  },
 ]
 
 export const SLASH_COMMANDS = IS_FREEBUFF

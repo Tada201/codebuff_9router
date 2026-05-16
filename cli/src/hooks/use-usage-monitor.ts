@@ -13,17 +13,19 @@ import { shouldAutoShowBanner } from '../utils/usage-banner-state'
  * This should be placed in a component that's always mounted (like Chat)
  * so monitoring happens continuously, not just when the banner is visible.
  */
-export function useUsageMonitor() {
+export function useUsageMonitor(options: { enabled: boolean }) {
   const isChainInProgress = useChatStore((state) => state.isChainInProgress)
   const sessionCreditsUsed = useChatStore((state) => state.sessionCreditsUsed)
   const setInputMode = useChatStore((state) => state.setInputMode)
   const lastWarnedThresholdRef = useRef<number | null>(null)
 
   // Query usage data - this will refetch when invalidated after message completion
-  const { data: usageData } = useUsageQuery({ enabled: !IS_FREEBUFF })
+  const { data: usageData } = useUsageQuery({
+    enabled: options.enabled && !IS_FREEBUFF,
+  })
 
   useEffect(() => {
-    if (IS_FREEBUFF) return
+    if (!options.enabled || IS_FREEBUFF) return
 
     // Only show after user has sent at least one message (to avoid overwhelming on app start)
     if (sessionCreditsUsed === 0) {

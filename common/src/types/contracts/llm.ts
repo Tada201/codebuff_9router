@@ -72,6 +72,7 @@ export type PromptAiSdkStreamFn = (
     signal: AbortSignal
     nineRouterEndpoint?: string
     nineRouterModel?: string
+    nineRouterApiKey?: string
   } & ParamsExcluding<typeof streamText, 'model' | 'messages'>,
 ) => AsyncGenerator<StreamChunk, PromptResult<string | null>>
 
@@ -107,6 +108,7 @@ export type PromptAiSdkFn = (
     signal: AbortSignal
     nineRouterEndpoint?: string
     nineRouterModel?: string
+    nineRouterApiKey?: string
   } & ParamsExcluding<typeof generateText, 'model' | 'messages'>,
 ) => Promise<PromptResult<string>>
 
@@ -142,6 +144,7 @@ export type PromptAiSdkStructuredInput<T> = {
   signal: AbortSignal
   nineRouterEndpoint?: string
   nineRouterModel?: string
+  nineRouterApiKey?: string
 }
 export type PromptAiSdkStructuredOutput<T> = Promise<PromptResult<T>>
 export type PromptAiSdkStructuredFn = <T>(

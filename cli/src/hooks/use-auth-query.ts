@@ -19,6 +19,7 @@ import {
   type User,
 } from '../utils/auth'
 import { resetCodebuffClient } from '../utils/codebuff-client'
+import { IS_FREEBUFF, LOCAL_SKIP_AUTH_TOKEN } from '../utils/constants'
 import { logger as defaultLogger, loggerContext } from '../utils/logger'
 
 import type { GetUserInfoFromApiKeyFn } from '@codebuff/common/types/contracts/database'
@@ -66,6 +67,11 @@ export async function validateApiKey({
   getUserInfoFromApiKey = defaultGetUserInfoFromApiKey,
   logger = defaultLogger,
 }: ValidateAuthParams): Promise<ValidatedUserInfo> {
+  // Bypassing validation for local skip auth
+  if (apiKey === LOCAL_SKIP_AUTH_TOKEN) {
+    return { id: 'local-user', email: 'local@9router.io' }
+  }
+
   const requestedFields = ['id', 'email'] as const
 
   try {
@@ -117,6 +123,7 @@ export interface UseAuthQueryDeps {
   getUserCredentials?: () => User | null
   getUserInfoFromApiKey?: GetUserInfoFromApiKeyFn
   logger?: Logger
+  authToken?: string | null
 }
 
 /**
@@ -133,7 +140,7 @@ export function useAuthQuery(deps: UseAuthQueryDeps = {}) {
   } = deps
 
   const userCredentials = getUserCredentials()
-  const apiKey = userCredentials?.authToken || getCiEnv().CODEBUFF_API_KEY || ''
+  const apiKey = deps.authToken || userCredentials?.authToken || getCiEnv().CODEBUFF_API_KEY || ''
 
   return useQuery({
     queryKey: authQueryKeys.validation(apiKey),

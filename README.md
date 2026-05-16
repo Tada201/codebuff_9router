@@ -163,52 +163,77 @@ freebuff
 
 Freebuff is ad-supported and uses models optimized for fast, high-quality assistance. It includes built-in web research, browser use, and more. Learn more in the [Freebuff README](./freebuff/README.md).
 
-## Local 9Router Integration
+## Local 9Router & Offline Mode
 
-Codebuff supports routing all AI requests through a local [9Router](https://github.com/Tada201/9router) proxy instance. This allows for cost optimization, local caching, and greater control over your LLM traffic.
+Codebuff supports routing all AI requests through a local [9Router](https://github.com/decolua/9router) proxy instance. This allows for cost optimization, local caching, and a completely private/offline workflow.
 
-### Configuration
+### Quick Start (Local Mode)
 
-To enable 9Router in the CLI:
+If you have built the local binary (see below), you can start in local mode immediately:
 
-1. **Set the endpoint**:
-   ```bash
-   /9router endpoint http://localhost:20128/v1
-   ```
-2. **(Optional) Set a specific model**:
-   ```bash
-   /9router model anthropic/claude-3.5-sonnet
-   ```
-3. **List available models**:
-   ```bash
-   /9router models
-   ```
-4. **Disable 9Router**:
-   ```bash
-   /9router off
-   ```
+```bash
+codebuff-local --local
+```
+
+### Configuration (Inside the CLI)
+
+Once started, you can manage your 9Router settings using slash commands:
+
+1.  **Set the endpoint**:
+    ```bash
+    /9router endpoint http://localhost:20128/v1
+    ```
+2.  **Set your 9Router API Key**:
+    ```bash
+    /9router key your_api_key_here
+    ```
+3.  **Set a specific model**:
+    ```bash
+    /9router model anthropic/claude-3.5-sonnet
+    ```
+4.  **List available models**:
+    ```bash
+    /9router models
+    ```
+5.  **Disable 9Router**:
+    ```bash
+    /9router off
+    ```
+
+### Authentication Skip
+In local mode (`--local`), the app will present a login screen. You can simply press **'s'** or click the **"Skip to Local Mode"** button to bypass online authentication.
+
+---
 
 ## Installing from Source
 
-If you want to run a custom version of Codebuff or contribute to development:
+To build and run this custom version of Codebuff:
 
-1. **Install Bun**:
-   ```powershell
-   powershell -c "irm bun.sh/install.ps1 | iex"
-   ```
-2. **Clone and Install Dependencies**:
-   ```bash
-   git clone https://github.com/Tada201/codebuff_9router.git
-   cd codebuff_9router
-   bun install
-   ```
-3. **Build the Binary**:
-   ```bash
-   cd cli
-   bun ./scripts/build-binary.ts codebuff-local 1.0.0
-   ```
-4. **Add to PATH**:
-   Add the `cli/bin` directory to your system's PATH to run `codebuff-local` from anywhere.
+### 1. Prerequisites
+*   **Bun**: The fast JavaScript runtime.
+    ```powershell
+    # Windows (PowerShell)
+    powershell -c "irm bun.sh/install.ps1 | iex"
+    ```
+
+### 2. Clone and Setup
+```bash
+git clone https://github.com/Tada201/codebuff_9router.git
+cd codebuff_9router
+bun install
+```
+
+### 3. Build the Windows Binary
+```bash
+cd cli
+bun ./scripts/build-binary.ts codebuff-local 1.0.0
+```
+This will generate `cli/bin/codebuff-local.exe`.
+
+### 4. Installation
+Add the `cli/bin` directory to your **System PATH** to use the `codebuff-local` command from any directory.
+
+---
 
 ## Uninstallation
 

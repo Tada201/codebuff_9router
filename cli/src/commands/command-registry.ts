@@ -13,6 +13,8 @@ import {
   setNineRouterEndpoint,
   getNineRouterModel,
   setNineRouterModel,
+  getNineRouterApiKey,
+  setNineRouterApiKey,
 } from '../utils/settings'
 import { resetCodebuffClient } from '../utils/codebuff-client'
 import { returnToFreebuffLanding } from '../hooks/use-freebuff-session'
@@ -664,6 +666,26 @@ const ALL_COMMANDS: CommandDefinition[] = [
         return
       }
 
+      if (parts[0] === 'key') {
+        const key = parts[1]
+        if (!key) {
+          const currentKey = getNineRouterApiKey()
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage(`Current 9Router API Key: ${currentKey ? '********' + currentKey.slice(-4) : 'not set'}`),
+          ])
+        } else {
+          setNineRouterApiKey(key)
+          resetCodebuffClient()
+          params.setMessages((prev) => [
+            ...prev,
+            getSystemMessage('9Router API Key updated.'),
+          ])
+        }
+        clearInput(params)
+        return
+      }
+
       if (parts[0] === 'models') {
         const endpoint = getNineRouterEndpoint() || 'http://localhost:20128/v1'
         try {
@@ -702,6 +724,7 @@ const ALL_COMMANDS: CommandDefinition[] = [
         getSystemMessage(`9Router Configuration:
 /9router endpoint [url] - Set local 9Router endpoint (default: http://localhost:20128/v1)
 /9router model [model]    - Set model to use with 9Router
+/9router key [key]        - Set API key for 9Router
 /9router models          - List available models from 9Router
 /9router off             - Disable 9Router and use standard providers`),
       ])

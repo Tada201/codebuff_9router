@@ -90,6 +90,8 @@ export interface ModelRequestParams {
   nineRouterEndpoint?: string
   /** 9Router model ID */
   nineRouterModel?: string
+  /** 9Router API Key */
+  nineRouterApiKey?: string
 }
 
 /**
@@ -159,7 +161,11 @@ export async function getModelForRequest(params: ModelRequestParams): Promise<Mo
   // Check if we should use 9Router local proxy
   if (params.nineRouterEndpoint) {
     return {
-      model: createNineRouterModel(params.nineRouterEndpoint, params.nineRouterModel || model),
+      model: createNineRouterModel(
+        params.nineRouterEndpoint,
+        params.nineRouterModel || model,
+        params.nineRouterApiKey,
+      ),
       isChatGptOAuth: false,
     }
   }
@@ -174,13 +180,21 @@ export async function getModelForRequest(params: ModelRequestParams): Promise<Mo
 /**
  * Create a model that routes through a local 9Router instance.
  */
-function createNineRouterModel(endpoint: string, model: string): LanguageModel {
+function createNineRouterModel(
+  endpoint: string,
+  model: string,
+  apiKey?: string,
+): LanguageModel {
   return new OpenAICompatibleChatLanguageModel(model, {
     provider: '9router',
-    url: () => endpoint.endsWith('/v1') ? `${endpoint}/chat/completions` : `${endpoint}/v1/chat/completions`,
+    url: () =>
+      endpoint.endsWith('/v1')
+        ? `${endpoint}/chat/completions`
+        : `${endpoint}/v1/chat/completions`,
     headers: () => ({
       'Content-Type': 'application/json',
       'user-agent': `ai-sdk/openai-compatible/${VERSION}/codebuff-9router`,
+      ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
     }),
     fetch: undefined,
     includeUsage: undefined,

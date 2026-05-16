@@ -109,6 +109,7 @@ export const Chat = ({
   gitRoot,
   onSwitchToGitRoot,
   freebuffSession,
+  isLocalMode,
 }: {
   headerContent: React.ReactNode
   initialPrompt: string | null
@@ -125,6 +126,7 @@ export const Chat = ({
   gitRoot?: string | null
   onSwitchToGitRoot?: () => void
   freebuffSession: FreebuffSessionResponse | null
+  isLocalMode: boolean
 }) => {
   const [forceFileOnlyMentions, setForceFileOnlyMentions] = useState(false)
 
@@ -134,7 +136,7 @@ export const Chat = ({
   useAskUserBridge()
 
   // Monitor usage data and auto-show banner when thresholds are crossed
-  useUsageMonitor()
+  useUsageMonitor({ enabled: !isLocalMode })
 
   // Get chat state from extracted hook
   const {
@@ -171,6 +173,7 @@ export const Chat = ({
   // Fetch subscription data early - needed for session credits tracking and ad gating
   const { data: subscriptionData } = useSubscriptionQuery({
     refetchInterval: 60 * 1000,
+    enabled: !isLocalMode,
   })
   const hasSubscription = subscriptionData?.hasSubscription ?? false
 

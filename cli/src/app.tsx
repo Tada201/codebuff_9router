@@ -117,6 +117,7 @@ export const App = ({
   const {
     isAuthenticated,
     setIsAuthenticated,
+    isLocalMode,
     setUser,
     handleLoginSuccess,
     logoutMutation,
@@ -274,6 +275,14 @@ export const App = ({
     )
   }
 
+  const handleSkip = useCallback(() => {
+    handleLoginSuccess({
+      name: 'Local User',
+      email: 'local@9router.io',
+      authToken: 'local-skip-auth',
+    })
+  }, [handleLoginSuccess])
+
   // Render login modal when not authenticated AND auth service is reachable
   // Don't show login modal during network outages OR while retrying
   if (
@@ -284,6 +293,7 @@ export const App = ({
     return (
       <LoginModal
         onLoginSuccess={handleLoginSuccess}
+        onSkip={handleSkip}
         hasInvalidCredentials={hasInvalidCredentials}
       />
     )
@@ -309,6 +319,7 @@ export const App = ({
       initialMode={initialMode}
       gitRoot={gitRoot}
       onSwitchToGitRoot={handleSwitchToGitRoot}
+      isLocalMode={isLocalMode}
       showChatHistory={showChatHistory}
       onSelectChat={handleResumeChat}
       onCancelChatHistory={closeChatHistory}
@@ -333,6 +344,7 @@ interface AuthedSurfaceProps {
   initialMode: AgentMode | undefined
   gitRoot: string | null | undefined
   onSwitchToGitRoot: () => void
+  isLocalMode: boolean
   showChatHistory: boolean
   onSelectChat: (chatId: string) => void
   onCancelChatHistory: () => void
@@ -360,6 +372,7 @@ const AuthedSurface = ({
   initialMode,
   gitRoot,
   onSwitchToGitRoot,
+  isLocalMode,
   showChatHistory,
   onSelectChat,
   onCancelChatHistory,
@@ -431,6 +444,7 @@ const AuthedSurface = ({
       gitRoot={gitRoot}
       onSwitchToGitRoot={onSwitchToGitRoot}
       freebuffSession={session}
+      isLocalMode={isLocalMode}
     />
   )
 }

@@ -6,7 +6,7 @@ import { useLoginStore } from '../state/login-store'
 import { identifyUser, trackEvent } from '../utils/analytics'
 import { getUserCredentials } from '../utils/auth'
 import { resetCodebuffClient } from '../utils/codebuff-client'
-import { IS_FREEBUFF } from '../utils/constants'
+import { IS_FREEBUFF, LOCAL_SKIP_AUTH_TOKEN } from '../utils/constants'
 import { loggerContext } from '../utils/logger'
 
 import type { MultilineInputHandle } from '../components/multiline-input'
@@ -36,7 +36,8 @@ export const useAuthState = ({
   setInputFocused,
   resetChatStore,
 }: UseAuthStateOptions) => {
-  const authQuery = useAuthQuery()
+  const [sessionToken, setSessionToken] = useState<string | null>(null)
+  const authQuery = useAuthQuery({ authToken: sessionToken })
   const logoutMutation = useLogoutMutation()
   const { resetLoginState } = useLoginStore()
 
@@ -73,6 +74,11 @@ export const useAuthState = ({
         })
       }
     } else if (authQuery.isError) {
+      // Don't wipe authentication state if we're in local skip mode
+      if (user?.authToken === LOCAL_SKIP_AUTH_TOKEN) {
+        return
+      }
+
       setIsAuthenticated(false)
       setUser(null)
       clearAuthLoggerContext()
@@ -90,11 +96,12 @@ export const useAuthState = ({
       })
 
       // Reset the SDK client to pick up new credentials
-      resetCodebuffClient()
+      resetCodebuffClient(loggedInUser.authToken)
       resetChatStore()
       resetLoginState()
       setInputFocused(true)
       setUser(loggedInUser)
+      setSessionToken(loggedInUser.authToken)
       setIsAuthenticated(true)
 
       if (loggedInUser.id && loggedInUser.email) {
@@ -126,9 +133,12 @@ export const useAuthState = ({
     return () => clearTimeout(timeoutId)
   }, [isAuthenticated, setInputFocused, inputRef])
 
+  const isLocalMode = user?.authToken === LOCAL_SKIP_AUTH_TOKEN
+
   return {
     isAuthenticated,
     setIsAuthenticated,
+    isLocalMode,
     user,
     setUser,
     handleLoginSuccess,

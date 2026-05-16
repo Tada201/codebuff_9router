@@ -12,6 +12,7 @@ import {
 import { shouldTrackAnalyticsEvent } from '@codebuff/common/util/analytics-sampling'
 
 import type { AnalyticsEvent } from '@codebuff/common/constants/analytics-events'
+import { LOCAL_SKIP_AUTH_TOKEN } from './constants'
 
 
 // Re-export types from core for backwards compatibility
@@ -180,6 +181,11 @@ export function trackEvent(
   event: AnalyticsEvent,
   properties?: Record<string, any>,
 ) {
+  // Disable analytics for local mode skip users
+  if (properties?.authToken === LOCAL_SKIP_AUTH_TOKEN) {
+    return
+  }
+
   const { isProd } = resolveDeps()
   const distinctId = getDistinctId()
 
@@ -232,6 +238,11 @@ export function trackEvent(
 }
 
 export function identifyUser(userId: string, properties?: Record<string, any>) {
+  // Disable analytics for local mode skip users
+  if (properties?.authToken === LOCAL_SKIP_AUTH_TOKEN) {
+    return
+  }
+
   if (!client) {
     const error = new Error('Analytics client not initialized')
     logAnalyticsError(error, {

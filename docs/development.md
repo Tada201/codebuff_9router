@@ -24,6 +24,14 @@ bun ./scripts/build-binary.ts codebuff-local 1.0.0
 ```
 
 The binary will be generated in `cli/bin/codebuff-local.exe` (on Windows) or `cli/bin/codebuff-local` (on Unix).
+ 
+ ### Local 9Router Testing
+ 
+ For development and testing of the 9Router integration:
+ 1. Build the local binary as shown above.
+ 2. Run with the `--local` flag: `cli/bin/codebuff-local.exe --local`.
+ 3. Use slash commands `/9router endpoint` and `/9router key` to configure your local proxy.
+ 4. Verify LLM requests are correctly routed to your local proxy.
 
 Other service commands:
 

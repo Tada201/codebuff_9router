@@ -12,6 +12,9 @@ export const IS_FREEBUFF = getCliEnv().FREEBUFF_MODE === 'true'
 export const END_SESSION_MESSAGE =
   'Ending session and returning to the model picker…'
 
+/** Auth token used when skipping login for Local/9Router mode. */
+export const LOCAL_SKIP_AUTH_TOKEN = 'local-skip-auth'
+
 // Agent IDs that should not be rendered in the CLI UI
 export const HIDDEN_AGENT_IDS = ['codebuff/context-pruner'] as const
 

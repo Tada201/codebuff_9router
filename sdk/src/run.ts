@@ -126,6 +126,7 @@ export type CodebuffClientOptions = {
 
   nineRouterEndpoint?: string
   nineRouterModel?: string
+  nineRouterApiKey?: string
 }
 
 export type ImageContent = {
@@ -224,6 +225,7 @@ async function runOnce({
   extraCodebuffMetadata,
   nineRouterEndpoint,
   nineRouterModel,
+  nineRouterApiKey,
 }: RunExecutionOptions): Promise<RunState> {
   const fsSourceValue = typeof fsSource === 'function' ? fsSource() : fsSource
   const fs = await fsSourceValue
@@ -383,6 +385,7 @@ async function runOnce({
     apiKey,
     nineRouterEndpoint,
     nineRouterModel,
+    nineRouterApiKey,
     handleStepsLogChunk: () => {
       // Does nothing for now
     },
