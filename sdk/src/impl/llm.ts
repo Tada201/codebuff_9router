@@ -310,6 +310,7 @@ export async function* promptAiSdkStream(
     costMode: params.costMode,
     nineRouterEndpoint: params.nineRouterEndpoint,
     nineRouterModel: params.nineRouterModel,
+    nineRouterApiKey: params.nineRouterApiKey,
   }
   const { model: aiSDKModel, isChatGptOAuth } =
     await getModelForRequest(modelParams)
@@ -726,6 +727,7 @@ export async function promptAiSdk(
     skipChatGptOAuth: true, // Always use Codebuff backend for non-streaming
     nineRouterEndpoint: params.nineRouterEndpoint,
     nineRouterModel: params.nineRouterModel,
+    nineRouterApiKey: params.nineRouterApiKey,
   }
   const { model: aiSDKModel } = await getModelForRequest(modelParams)
 
@@ -795,6 +797,7 @@ export async function promptAiSdkStructured<T>(
     skipChatGptOAuth: true, // Always use Codebuff backend for non-streaming
     nineRouterEndpoint: params.nineRouterEndpoint,
     nineRouterModel: params.nineRouterModel,
+    nineRouterApiKey: params.nineRouterApiKey,
   }
   const { model: aiSDKModel } = await getModelForRequest(modelParams)
 
