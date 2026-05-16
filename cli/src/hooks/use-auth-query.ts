@@ -19,7 +19,8 @@ import {
   type User,
 } from '../utils/auth'
 import { resetCodebuffClient } from '../utils/codebuff-client'
-import { IS_FREEBUFF, LOCAL_SKIP_AUTH_TOKEN } from '../utils/constants'
+import { LOCAL_SKIP_AUTH_TOKEN } from '@codebuff/common/constants/auth'
+import { IS_FREEBUFF } from '../utils/constants'
 import { logger as defaultLogger, loggerContext } from '../utils/logger'
 
 import type { GetUserInfoFromApiKeyFn } from '@codebuff/common/types/contracts/database'

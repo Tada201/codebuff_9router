@@ -12,7 +12,7 @@ import {
 import { shouldTrackAnalyticsEvent } from '@codebuff/common/util/analytics-sampling'
 
 import type { AnalyticsEvent } from '@codebuff/common/constants/analytics-events'
-import { LOCAL_SKIP_AUTH_TOKEN } from './constants'
+import { LOCAL_SKIP_AUTH_TOKEN } from '@codebuff/common/constants/auth'
 
 
 // Re-export types from core for backwards compatibility
