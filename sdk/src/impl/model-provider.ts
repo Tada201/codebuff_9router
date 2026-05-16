@@ -123,7 +123,19 @@ type OpenRouterUsageAccounting = {
 export async function getModelForRequest(params: ModelRequestParams): Promise<ModelResult> {
   const { apiKey, model, skipChatGptOAuth, costMode } = params
 
-  // Check if we should use ChatGPT OAuth direct
+  // 1. Check if we should use 9Router local proxy (Absolute Precedence)
+  if (params.nineRouterEndpoint) {
+    return {
+      model: createNineRouterModel(
+        params.nineRouterEndpoint,
+        params.nineRouterModel || model,
+        params.nineRouterApiKey,
+      ),
+      isChatGptOAuth: false,
+    }
+  }
+
+  // 2. Check if we should use ChatGPT OAuth direct
   // Only attempt for allowlisted models; non-allowlisted models silently fall through to backend.
   if (
     CHATGPT_OAUTH_ENABLED &&
@@ -158,18 +170,6 @@ export async function getModelForRequest(params: ModelRequestParams): Promise<Mo
     }
   }
 
-  // Check if we should use 9Router local proxy
-  if (params.nineRouterEndpoint) {
-    return {
-      model: createNineRouterModel(
-        params.nineRouterEndpoint,
-        params.nineRouterModel || model,
-        params.nineRouterApiKey,
-      ),
-      isChatGptOAuth: false,
-    }
-  }
-
   // Default: use Codebuff backend
   return {
     model: createCodebuffBackendModel(apiKey, model),
@@ -187,15 +187,22 @@ function createNineRouterModel(
 ): LanguageModel {
   return new OpenAICompatibleChatLanguageModel(model, {
     provider: '9router',
-    url: () =>
-      endpoint.endsWith('/v1')
+    url: () => {
+      const targetUrl = endpoint.endsWith('/v1')
         ? `${endpoint}/chat/completions`
-        : `${endpoint}/v1/chat/completions`,
-    headers: () => ({
-      'Content-Type': 'application/json',
-      'user-agent': `ai-sdk/openai-compatible/${VERSION}/codebuff-9router`,
-      ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
-    }),
+        : `${endpoint}/v1/chat/completions`
+      console.log(`[9Router] Requesting: ${targetUrl}`)
+      return targetUrl
+    },
+    headers: () => {
+      const h = {
+        'Content-Type': 'application/json',
+        'user-agent': `ai-sdk/openai-compatible/${VERSION}/codebuff-9router`,
+        ...(apiKey && { Authorization: `Bearer ${apiKey}` }),
+      }
+      console.log(`[9Router] Headers: ${JSON.stringify({ ...h, Authorization: h.Authorization ? 'Bearer ********' : undefined })}`)
+      return h
+    },
     fetch: undefined,
     includeUsage: undefined,
     supportsStructuredOutputs: true,

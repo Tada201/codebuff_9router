@@ -283,6 +283,7 @@ export async function* promptAiSdkStream(
     chatGptOAuthRetried?: boolean
   },
 ): ReturnType<PromptAiSdkStreamFn> {
+  console.log(`[9Router] promptAiSdkStream entry: model=${params.model}`)
   const {
     providerOptions: originalProviderOptions,
     ...streamParams
@@ -327,11 +328,21 @@ export async function* promptAiSdkStream(
     })
   }
 
+  if (modelParams.nineRouterEndpoint) {
+    console.log(`[9Router] Routing through 9Router: ${modelParams.nineRouterEndpoint} (model: ${modelParams.nineRouterModel || requestedModel})`)
+  }
+
+  const messages = convertCbToModelMessages(params)
+  if (modelParams.nineRouterEndpoint) {
+    console.log(`[9Router] Messages count: ${messages.length}`)
+    console.log(`[9Router] Last message content: ${JSON.stringify(messages[messages.length - 1]?.content).slice(0, 100)}...`)
+  }
+
   const response = streamText({
     ...streamParams,
     prompt: undefined,
     model: aiSDKModel,
-    messages: convertCbToModelMessages(params),
+    messages,
     ...(isChatGptOAuth && { maxRetries: 0 }),
     // For ChatGPT OAuth direct, don't send codebuff metadata/provider options to OpenAI
     ...(isChatGptOAuth
@@ -461,7 +472,9 @@ export async function* promptAiSdkStream(
   // Track if we've yielded any content - if so, we can't safely fall back
   let hasYieldedContent = false
 
+  console.log('[9Router] Waiting for first chunk...')
   for await (const chunkValue of response.fullStream) {
+    console.log(`[9Router] Received chunk type: ${chunkValue.type}`)
     if (chunkValue.type !== 'text-delta') {
       const flushed = stopSequenceHandler.flush()
       if (flushed) {

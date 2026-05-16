@@ -60,7 +60,11 @@ export function getAgentRuntimeImpl(
     nineRouterApiKey,
   } = params
 
+  const isLocalMode = apiKey === LOCAL_SKIP_AUTH_TOKEN || !!nineRouterEndpoint
+
   const trackSdkRuntimeEvent: TrackEventFn = (eventParams) => {
+    if (isLocalMode) return
+
     if (
       clientEnv.NEXT_PUBLIC_CB_ENVIRONMENT === 'prod' &&
       !shouldTrackAnalyticsEvent({
@@ -81,19 +85,19 @@ export function getAgentRuntimeImpl(
     ciEnv: getCiEnv(),
 
     // Database
-    getUserInfoFromApiKey: apiKey === LOCAL_SKIP_AUTH_TOKEN
+    getUserInfoFromApiKey: isLocalMode
       ? async (params: any) => ({ id: 'local-user', email: 'local@9router.io' } as any)
       : getUserInfoFromApiKeyReal,
-    fetchAgentFromDatabase: apiKey === LOCAL_SKIP_AUTH_TOKEN
+    fetchAgentFromDatabase: isLocalMode
       ? async () => null
       : fetchAgentFromDatabaseReal,
-    startAgentRun: apiKey === LOCAL_SKIP_AUTH_TOKEN
+    startAgentRun: isLocalMode
       ? async () => 'local-run-id'
       : startAgentRunReal,
-    finishAgentRun: apiKey === LOCAL_SKIP_AUTH_TOKEN
+    finishAgentRun: isLocalMode
       ? async () => {}
       : finishAgentRunReal,
-    addAgentStep: apiKey === LOCAL_SKIP_AUTH_TOKEN
+    addAgentStep: isLocalMode
       ? async () => 'local-step-id'
       : addAgentStepReal,
 

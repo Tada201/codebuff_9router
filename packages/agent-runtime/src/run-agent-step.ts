@@ -879,6 +879,7 @@ export async function loopAgentSteps(
         countTokensJson(toolsForTokenCount)
 
       if (
+        userId === 'local-user' ||
         shouldUseLocalTokenCountForFreebuffDeepseekFlash({
           agentId: agentTemplate.id,
           model: agentTemplate.model,
