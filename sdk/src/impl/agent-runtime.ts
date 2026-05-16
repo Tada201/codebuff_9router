@@ -4,12 +4,13 @@ import { getCiEnv } from '@codebuff/common/env-ci'
 import { shouldTrackAnalyticsEvent } from '@codebuff/common/util/analytics-sampling'
 import { success } from '@codebuff/common/util/error'
 
+import { LOCAL_SKIP_AUTH_TOKEN } from '@codebuff/common/constants/auth'
 import {
-  addAgentStep,
-  fetchAgentFromDatabase,
-  finishAgentRun,
-  getUserInfoFromApiKey,
-  startAgentRun,
+  addAgentStep as addAgentStepReal,
+  fetchAgentFromDatabase as fetchAgentFromDatabaseReal,
+  finishAgentRun as finishAgentRunReal,
+  getUserInfoFromApiKey as getUserInfoFromApiKeyReal,
+  startAgentRun as startAgentRunReal,
 } from './database'
 import { promptAiSdk, promptAiSdkStream, promptAiSdkStructured } from './llm'
 
@@ -80,11 +81,21 @@ export function getAgentRuntimeImpl(
     ciEnv: getCiEnv(),
 
     // Database
-    getUserInfoFromApiKey,
-    fetchAgentFromDatabase,
-    startAgentRun,
-    finishAgentRun,
-    addAgentStep,
+    getUserInfoFromApiKey: apiKey === LOCAL_SKIP_AUTH_TOKEN
+      ? async (params: any) => ({ id: 'local-user', email: 'local@9router.io' } as any)
+      : getUserInfoFromApiKeyReal,
+    fetchAgentFromDatabase: apiKey === LOCAL_SKIP_AUTH_TOKEN
+      ? async () => null
+      : fetchAgentFromDatabaseReal,
+    startAgentRun: apiKey === LOCAL_SKIP_AUTH_TOKEN
+      ? async () => 'local-run-id'
+      : startAgentRunReal,
+    finishAgentRun: apiKey === LOCAL_SKIP_AUTH_TOKEN
+      ? async () => {}
+      : finishAgentRunReal,
+    addAgentStep: apiKey === LOCAL_SKIP_AUTH_TOKEN
+      ? async () => 'local-step-id'
+      : addAgentStepReal,
 
     // Billing
     consumeCreditsWithFallback: async () =>
