@@ -61,7 +61,7 @@
     "@ai-sdk/provider-utils": "^3.0.17",
     "@codebuff/common": "workspace:*",
     "drizzle-kit": "0.31.8",
-    "drizzle-orm": "0.45.1",
+    "drizzle-orm": "0.45.2",
     "loops": "^5.0.1",
     "msw": "^2.12.1",
     "postgres": "^3.4.7",
